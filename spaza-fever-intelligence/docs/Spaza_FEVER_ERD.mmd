@@ -1,0 +1,165 @@
+erDiagram
+    SHOPS {
+        uuid id PK
+        varchar name
+        boolean active
+        timestamptz created_at
+    }
+    USERS {
+        uuid id PK
+        varchar full_name
+        varchar email UK
+        text password_hash
+        varchar role
+        boolean active
+    }
+    SHOP_USERS {
+        uuid shop_id PK, FK
+        uuid user_id PK, FK
+        timestamptz joined_at
+    }
+    API_KEYS {
+        uuid id PK
+        uuid user_id FK
+        uuid shop_id FK
+        varchar name
+        char key_hash UK
+        timestamptz expires_at
+        timestamptz revoked_at
+    }
+    CATEGORIES {
+        uuid id PK
+        uuid shop_id FK
+        varchar name
+        boolean active
+    }
+    SUPPLIERS {
+        uuid id PK
+        uuid shop_id FK
+        varchar name
+        varchar phone
+        boolean active
+    }
+    PRODUCTS {
+        uuid id PK
+        uuid shop_id FK
+        uuid category_id FK
+        uuid supplier_id FK
+        varchar name
+        numeric selling_price
+        integer quantity_on_hand
+        integer minimum_stock
+    }
+    PURCHASES {
+        uuid id PK
+        uuid shop_id FK
+        uuid supplier_id FK
+        uuid created_by FK
+        numeric total_amount
+        timestamptz purchased_at
+    }
+    PURCHASE_ITEMS {
+        uuid id PK
+        uuid purchase_id FK
+        uuid product_id FK
+        integer quantity
+        numeric unit_cost
+        numeric line_total
+    }
+    SALES {
+        uuid id PK
+        uuid shop_id FK
+        uuid cashier_id FK
+        varchar receipt_number
+        numeric total
+        varchar status
+        timestamptz sold_at
+    }
+    SALE_ITEMS {
+        uuid id PK
+        uuid sale_id FK
+        uuid product_id FK
+        integer quantity
+        numeric unit_price
+        numeric cost_price
+    }
+    PAYMENTS {
+        uuid id PK
+        uuid sale_id FK
+        varchar method
+        numeric amount
+        timestamptz paid_at
+    }
+    STOCK_MOVEMENTS {
+        uuid id PK
+        uuid shop_id FK
+        uuid product_id FK
+        uuid created_by FK
+        varchar movement_type
+        integer quantity_change
+        integer quantity_after
+        uuid reference_id
+    }
+    EXPENSES {
+        uuid id PK
+        uuid shop_id FK
+        uuid recorded_by FK
+        varchar category
+        numeric amount
+        date expense_date
+    }
+    CUSTOMERS {
+        uuid id PK
+        uuid shop_id FK
+        varchar name
+        varchar phone
+        varchar email
+        boolean active
+    }
+    CUSTOMER_ACCOUNTS {
+        uuid id PK
+        uuid customer_id FK
+        uuid sale_id FK
+        varchar transaction_type
+        numeric amount
+        timestamptz created_at
+    }
+    AUDIT_LOGS {
+        uuid id PK
+        uuid shop_id FK
+        uuid user_id FK
+        varchar action
+        uuid entity_id
+        jsonb details
+        timestamptz created_at
+    }
+
+    SHOPS ||--o{ SHOP_USERS : memberships
+    USERS ||--o{ SHOP_USERS : belongs_to
+    USERS ||--o{ API_KEYS : owns
+    SHOPS ||--o{ API_KEYS : scopes
+    SHOPS ||--o{ CATEGORIES : defines
+    SHOPS ||--o{ SUPPLIERS : records
+    SHOPS ||--o{ PRODUCTS : owns
+    CATEGORIES o|--o{ PRODUCTS : classifies
+    SUPPLIERS o|--o{ PRODUCTS : preferred_supplier
+    SHOPS ||--o{ PURCHASES : records
+    SUPPLIERS o|--o{ PURCHASES : supplies
+    USERS o|--o{ PURCHASES : created_by
+    PURCHASES ||--o{ PURCHASE_ITEMS : contains
+    PRODUCTS ||--o{ PURCHASE_ITEMS : purchased_as
+    SHOPS ||--o{ SALES : records
+    USERS o|--o{ SALES : cashier
+    SALES ||--o{ SALE_ITEMS : contains
+    PRODUCTS ||--o{ SALE_ITEMS : sold_as
+    SALES ||--o{ PAYMENTS : paid_by
+    SHOPS ||--o{ STOCK_MOVEMENTS : tracks
+    PRODUCTS ||--o{ STOCK_MOVEMENTS : movement_history
+    USERS o|--o{ STOCK_MOVEMENTS : created_by
+    SHOPS ||--o{ EXPENSES : incurs
+    USERS o|--o{ EXPENSES : recorded_by
+    SHOPS ||--o{ CUSTOMERS : records
+    CUSTOMERS ||--o{ CUSTOMER_ACCOUNTS : ledger
+    SALES o|--o{ CUSTOMER_ACCOUNTS : related_sale
+    SHOPS o|--o{ AUDIT_LOGS : audit_scope
+    USERS o|--o{ AUDIT_LOGS : performed_by

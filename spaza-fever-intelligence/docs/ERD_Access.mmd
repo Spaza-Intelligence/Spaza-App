@@ -1,0 +1,38 @@
+erDiagram
+  SHOPS {
+    uuid id PK
+    varchar name
+    boolean active
+  }
+  USERS {
+    uuid id PK
+    varchar email UK
+    varchar role
+    boolean active
+  }
+  SHOP_USERS {
+    uuid shop_id PK, FK
+    uuid user_id PK, FK
+    timestamptz joined_at
+  }
+  API_KEYS {
+    uuid id PK
+    uuid user_id FK
+    uuid shop_id FK
+    char key_hash UK
+    timestamptz expires_at
+    timestamptz revoked_at
+  }
+  AUDIT_LOGS {
+    uuid id PK
+    uuid shop_id FK
+    uuid user_id FK
+    varchar action
+    timestamptz created_at
+  }
+  SHOPS ||--o{ SHOP_USERS : memberships
+  USERS ||--o{ SHOP_USERS : belongs_to
+  USERS ||--o{ API_KEYS : owns
+  SHOPS ||--o{ API_KEYS : scopes
+  SHOPS o|--o{ AUDIT_LOGS : audit_scope
+  USERS o|--o{ AUDIT_LOGS : performed_by

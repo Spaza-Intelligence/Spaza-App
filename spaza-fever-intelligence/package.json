@@ -1,0 +1,52 @@
+{
+  "name": "spaza-fever-intelligence",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone PostgreSQL shop management system for spaza shops and small retailers.",
+  "scripts": {
+    "dev": "concurrently -k \"pnpm dev:server\" \"pnpm dev:client\"",
+    "dev:server": "tsx watch server/index.ts",
+    "dev:client": "vite --config client/vite.config.ts",
+    "build": "pnpm build:client && pnpm build:server",
+    "build:client": "vite build --config client/vite.config.ts",
+    "build:server": "esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist/server",
+    "start": "NODE_ENV=production node dist/server/index.js",
+    "check": "tsc --noEmit",
+    "bootstrap:admin": "tsx scripts/bootstrap-admin.ts",
+    "db:init": "docker compose up -d",
+    "db:push": "docker compose up -d",
+    "db:studio": "docker compose exec db psql -U ${POSTGRES_USER:-spaza_user} -d ${POSTGRES_DB:-spaza_db}",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.2",
+    "cookie": "^1.0.2",
+    "dotenv": "^18.0.9",
+    "drizzle-orm": "^0.44.6",
+    "express": "^4.21.2",
+    "jose": "^6.1.0",
+    "lucide-react": "^0.468.0",
+    "pg": "^8.16.3",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/cookie": "^1.0.0",
+    "@types/express": "^5.0.1",
+    "@types/node": "^24.7.0",
+    "@types/pg": "^8.15.5",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.0.4",
+    "concurrently": "^9.1.2",
+    "drizzle-kit": "^0.31.4",
+    "esbuild": "^0.25.0",
+    "prettier": "^3.6.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.7"
+  },
+  "packageManager": "pnpm@10.18.0"
+}

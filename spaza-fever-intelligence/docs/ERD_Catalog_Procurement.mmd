@@ -1,0 +1,64 @@
+erDiagram
+  SHOPS {
+    uuid id PK
+    varchar name
+  }
+  USERS {
+    uuid id PK
+    varchar email UK
+    varchar role
+  }
+  CATEGORIES {
+    uuid id PK
+    uuid shop_id FK
+    varchar name
+  }
+  SUPPLIERS {
+    uuid id PK
+    uuid shop_id FK
+    varchar name
+  }
+  PRODUCTS {
+    uuid id PK
+    uuid shop_id FK
+    uuid category_id FK
+    uuid supplier_id FK
+    varchar name
+    numeric selling_price
+    integer quantity_on_hand
+  }
+  PURCHASES {
+    uuid id PK
+    uuid shop_id FK
+    uuid supplier_id FK
+    uuid created_by FK
+    numeric total_amount
+  }
+  PURCHASE_ITEMS {
+    uuid id PK
+    uuid purchase_id FK
+    uuid product_id FK
+    integer quantity
+    numeric unit_cost
+  }
+  STOCK_MOVEMENTS {
+    uuid id PK
+    uuid shop_id FK
+    uuid product_id FK
+    uuid created_by FK
+    integer quantity_change
+    integer quantity_after
+  }
+  SHOPS ||--o{ CATEGORIES : defines
+  SHOPS ||--o{ SUPPLIERS : records
+  SHOPS ||--o{ PRODUCTS : owns
+  CATEGORIES o|--o{ PRODUCTS : classifies
+  SUPPLIERS o|--o{ PRODUCTS : preferred_supplier
+  SHOPS ||--o{ PURCHASES : records
+  SUPPLIERS o|--o{ PURCHASES : supplies
+  USERS o|--o{ PURCHASES : created_by
+  PURCHASES ||--o{ PURCHASE_ITEMS : contains
+  PRODUCTS ||--o{ PURCHASE_ITEMS : purchased_as
+  SHOPS ||--o{ STOCK_MOVEMENTS : tracks
+  PRODUCTS ||--o{ STOCK_MOVEMENTS : movement_history
+  USERS o|--o{ STOCK_MOVEMENTS : created_by

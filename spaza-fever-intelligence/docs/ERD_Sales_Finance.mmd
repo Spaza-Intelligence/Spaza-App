@@ -1,0 +1,81 @@
+erDiagram
+  SHOPS {
+    uuid id PK
+    varchar name
+  }
+  USERS {
+    uuid id PK
+    varchar email UK
+    varchar role
+  }
+  PRODUCTS {
+    uuid id PK
+    uuid shop_id FK
+    varchar name
+    numeric selling_price
+    integer quantity_on_hand
+  }
+  SALES {
+    uuid id PK
+    uuid shop_id FK
+    uuid cashier_id FK
+    varchar receipt_number
+    numeric total
+    varchar status
+  }
+  SALE_ITEMS {
+    uuid id PK
+    uuid sale_id FK
+    uuid product_id FK
+    integer quantity
+    numeric unit_price
+    numeric cost_price
+  }
+  PAYMENTS {
+    uuid id PK
+    uuid sale_id FK
+    varchar method
+    numeric amount
+    timestamptz paid_at
+  }
+  STOCK_MOVEMENTS {
+    uuid id PK
+    uuid shop_id FK
+    uuid product_id FK
+    integer quantity_change
+    integer quantity_after
+  }
+  CUSTOMERS {
+    uuid id PK
+    uuid shop_id FK
+    varchar name
+    varchar phone
+  }
+  CUSTOMER_ACCOUNTS {
+    uuid id PK
+    uuid customer_id FK
+    uuid sale_id FK
+    varchar transaction_type
+    numeric amount
+  }
+  EXPENSES {
+    uuid id PK
+    uuid shop_id FK
+    uuid recorded_by FK
+    varchar category
+    numeric amount
+    date expense_date
+  }
+  SHOPS ||--o{ SALES : records
+  USERS o|--o{ SALES : cashier
+  SALES ||--o{ SALE_ITEMS : contains
+  PRODUCTS ||--o{ SALE_ITEMS : sold_as
+  SALES ||--o{ PAYMENTS : settled_by
+  SHOPS ||--o{ PRODUCTS : owns
+  SHOPS ||--o{ STOCK_MOVEMENTS : tracks
+  PRODUCTS ||--o{ STOCK_MOVEMENTS : movement_history
+  SHOPS ||--o{ CUSTOMERS : records
+  CUSTOMERS ||--o{ CUSTOMER_ACCOUNTS : ledger
+  SALES o|--o{ CUSTOMER_ACCOUNTS : related_sale
+  SHOPS ||--o{ EXPENSES : incurs
+  USERS o|--o{ EXPENSES : recorded_by
